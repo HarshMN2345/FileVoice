@@ -1,6 +1,6 @@
 # FileVoice: Talk to Your Documents Like Never Before
 
-![FileVoice Banner](../frontend/public/readme.png)
+![FileVoice Banner](./images/readme.png)
 
 ## Overview
 
