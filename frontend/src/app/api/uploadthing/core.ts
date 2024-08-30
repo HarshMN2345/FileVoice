@@ -2,12 +2,13 @@ import { db } from "@/db";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { createUploadthing, type FileRouter } from "uploadthing/next";
 import { UploadThingError } from "uploadthing/server";
+import { OpenAIEmbeddings } from '@langchain/openai'
 import { PineconeStore } from "@langchain/pinecone";
 import { Pinecone as PineconeClient } from "@pinecone-database/pinecone";
 import { GoogleGenerativeAIEmbeddings } from "@langchain/google-genai";
 import { TaskType } from "@google/generative-ai";
 
-import { PDFLoader } from 'langchain/document_loaders/fs/pdf'
+import { PDFLoader } from '@langchain/community/document_loaders/fs/pdf'
 import { getPineconeClient } from "@/lib/pinecone";
 
 const f = createUploadthing();
@@ -44,15 +45,13 @@ export const ourFileRouter = {
 
         const pagesAmt = pageLevelDocs.length
         // vectorize and index entire document
+        console.log("creating pinecone")
         const pinecone = await getPineconeClient();
         const pineconeIndex = pinecone.Index('filevoice');
-        const embeddings = new GoogleGenerativeAIEmbeddings({
-          model: "text-embedding-004", // 768 dimensions
-          taskType: TaskType.RETRIEVAL_DOCUMENT,
-          title: "Document title",
-        });
-     
+        const embeddings = new OpenAIEmbeddings({
+          apiKey: process.env.OPENAI_API_KEY,
 
+        })
         await PineconeStore.fromDocuments(
           pageLevelDocs,
           embeddings,
